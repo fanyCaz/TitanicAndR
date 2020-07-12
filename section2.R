@@ -61,3 +61,5 @@ test$Survived[test$Sex == 'female' & test$Fare >= 20 & test$Pclass== 3] <- 0
 #make the csv
 submit2<-data.frame(PassengerId=test$PassengerId,Survived=test$Survived)
 write.csv(submit,file="genderclassfare.csv",row.names = FALSE)
+
+prop.table(table(genderclassfare$Survived))
