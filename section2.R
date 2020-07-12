@@ -33,8 +33,31 @@ summary(train$Age)
 train$Child <- 0
 train$Child[train$Age < 18] <- 1
 prop.table(table(train$Age,train$Survived))
-
+#takes the formula and assign it to the variable in the left,data=data set to look at,FUN= function to apply to the dataset
 aggregate(Survived ~ Child + Sex,data=train, FUN= sum)
-#this can be read as :
+#these results can be read as :
 #adult females who survived 195
 #infant females who survived 38... and so on
+
+#this aggregate is a function to give us the proportion
+aggregate(Survived ~ Child + Sex , data=train, FUN=function(x){sum(x)/length(x)})
+
+#Investigate the fare
+#to tabulate , we make divisions of the data
+summary(train$Fare)
+train$FareDivided <- '30+'
+train$FareDivided[train$Fare < 30 & train$Fare >= 20] <- '20-30'
+train$FareDivided[train$Fare < 20 & train$Fare >= 10] <- '10-20'
+train$FareDivided[train$Fare < 10] <- '<10'
+train$FareDivided[train$Fare > 100] <- '>100'
+#Now that the fare is in subsets, we can group the data
+aggregate(Survived ~ Sex + Pclass  + FareDivided, data=train, FUN=function(x){sum(x)/length(x)})
+
+#make new prediction
+test$Survived <- 0
+test$Survived[test$Sex == 'female'] <- 1
+test$Survived[test$Sex == 'female' & test$Fare >= 20 & test$Pclass== 3] <- 0
+
+#make the csv
+submit2<-data.frame(PassengerId=test$PassengerId,Survived=test$Survived)
+write.csv(submit,file="genderclassfare.csv",row.names = FALSE)
